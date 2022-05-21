@@ -46,9 +46,12 @@ def decrypt_files(key):
                 os.remove(file)
             except IOError:
                 print("An input/output error has occurred!")
+    os.remove(key_file_name)
 
 
 def write_key(key):
+    if os.path.exists(key_file_name):
+        return False
     try:
         with open(key_file_name, 'wb') as f:
             f.write(key)
